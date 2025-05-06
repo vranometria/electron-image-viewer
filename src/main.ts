@@ -1,18 +1,23 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, screen } from 'electron';
 import path from 'node:path';
 import { FileType, Fs } from './fs-dev';
 import { FileData } from './types/file-data';
 
 
 const createWindow = () => {
-  // Create the browser window.
+  const mousePos = screen.getCursorScreenPoint(); // ← マウス座標を取得
+
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    x: mousePos.x - 400, // ← マウス座標を基準にウィンドウの位置を調整
+    y: mousePos.y - 300, // ← マウス座標を基準にウィンドウの位置を調整
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
+
+  
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
