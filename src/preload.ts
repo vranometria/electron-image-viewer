@@ -7,4 +7,9 @@ contextBridge.exposeInMainWorld('api', {
     resolveFiles: async (filePathes: string[]) => {
         return await ipcRenderer.invoke('resolveFiles', filePathes);
     },
+    deleteFile: async (filePath: string) => {
+        console.log(`deleteFile: ${filePath}`);
+        
+        return await ipcRenderer.invoke('deleteFile', filePath);
+    }
 });

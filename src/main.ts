@@ -71,3 +71,7 @@ ipcMain.handle('resolveFiles', async (_event, filePathes: string[]) => {
   }
   return fileDatas;
 });
+
+ipcMain.handle('deleteFile', async (_event, filePath: string) => {
+  return Fs.deleteFile(filePath);
+});

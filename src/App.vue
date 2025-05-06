@@ -1,7 +1,13 @@
 <template>
     <div @dragover.prevent="events.dragover" @drop.prevent="events.handleDrop" @wheel="events.wheel" class="app-container">
         <div v-if="fileDatas.length > 0" class="img-container">
-            <img :src="fileDatas[index].imgSrc" alt="Image" class="file-image" />
+            <div>
+                {{ index+1 }} / {{ fileDatas.length }}
+                <button @click="events.deleteClicked">×</button>
+            </div>
+            <div>
+                <img :src="fileDatas[index].imgSrc" alt="Image" class="file-image" />
+            </div>
         </div>
         <div v-else class="drop-container">
             <h2>Drop here!</h2>
@@ -42,6 +48,20 @@ const events = {
         } else if (index.value >= fileDatas.value.length) {
             index.value = fileDatas.value.length - 1;
         }
+    },
+    deleteClicked: async () => {
+        const filepath = fileDatas.value[index.value].filePath;
+        const isSuccess = await window.api.deleteFile(filepath);
+        if(!isSuccess) {
+            alert('Failed to delete the file.');
+            return;
+        }
+        if (fileDatas.value.length > 0) {
+            fileDatas.value.splice(index.value, 1);
+            if (index.value >= fileDatas.value.length) {
+                index.value = fileDatas.value.length - 1;
+            }
+        }
     }
 }
 
@@ -65,7 +85,6 @@ const events = {
 .img-container {
     width: 100%;
     height: 100%;
-    display: flex;
     justify-content: center;
     align-items: center;
     background-color: #f0f0f0;

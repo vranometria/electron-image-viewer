@@ -33,7 +33,7 @@ export class Fs {
   static resove(filePath: string) {
     const data = fs.readFileSync(filePath);
     const ext = path.extname(filePath).slice(1);
-    const base64 = data.toString('base64');
+    const base64 = data.toString("base64");
     return `data:image/${ext};base64,${base64}`;
   }
 
@@ -49,5 +49,16 @@ export class Fs {
       }
     }
     return fileList;
+  }
+
+  static deleteFile(filePath: string) {
+    try {
+      fs.unlinkSync(filePath);
+      console.log(`Deleted file: ${filePath}`);
+      return true;
+    } catch (error) {
+      console.error(`Error deleting file ${filePath}:`, error);
+        return false;
+    }
   }
 }
