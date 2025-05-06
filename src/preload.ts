@@ -1,2 +1,10 @@
-// See the Electron documentation for details on how to use preload scripts:
-// https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
+import { contextBridge, ipcRenderer, webUtils } from 'electron';
+
+contextBridge.exposeInMainWorld('api', {
+    fullpath: (file: File) => {
+        return webUtils.getPathForFile(file);
+    },
+    resolveFiles: async (filePathes: string[]) => {
+        return await ipcRenderer.invoke('resolveFiles', filePathes);
+    },
+});

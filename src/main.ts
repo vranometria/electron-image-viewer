@@ -1,11 +1,8 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
-import started from 'electron-squirrel-startup';
+import { FileType, Fs } from './fs-dev';
+import { FileData } from './types/file-data';
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (started) {
-  app.quit();
-}
 
 const createWindow = () => {
   // Create the browser window.
@@ -52,3 +49,25 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+
+ipcMain.handle('resolveFiles', async (_event, filePathes: string[]) => {
+  const fileDatas = [];
+  for (const f of filePathes) {
+    const filetype = Fs.detectFileType(f);
+    if(filetype === FileType.File && Fs.isImageFile(f)) {
+      const fileData = new FileData(f, Fs.resove(f));
+      fileDatas.push(fileData);
+      continue;
+    }
+
+    if (filetype === FileType.Directory) {
+      const files = Fs.getFiles(f);
+      const fdl = files.map((file) => {
+        const fileData = new FileData(file, Fs.resove(file));
+        return fileData;
+      });
+      fileDatas.push(...fdl);
+    }
+  }
+  return fileDatas;
+});
