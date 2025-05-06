@@ -1,9 +1,9 @@
 <template>
     <div @dragover.prevent="events.dragover" @drop.prevent="events.handleDrop" @wheel="events.wheel" class="app-container">
-        <div v-if="fileDatas.length > 0" class="img-container">
-            <div>
+        <div v-if="fileDatas.length > 0" class="view-container">
+            <div class="control-area">
                 {{ index+1 }} / {{ fileDatas.length }}
-                <button @click="events.deleteClicked">×</button>
+                <button @click="events.deleteClicked" class="del">×</button>
             </div>
             <div>
                 <img :src="fileDatas[index].imgSrc" alt="Image" class="file-image" />
@@ -20,14 +20,14 @@ import { ref } from 'vue'
 import { FileData } from './types/file-data'
 
 const files = ref<File[]>([])
-const fileDatas = ref<FileData[]>('')
+const fileDatas = ref<FileData[]>([])
 const index = ref(0);
 
 const events = {
-    dragover: (e) => {
+    dragover: (e:DragEvent) => {
         e.dataTransfer.dropEffect = 'copy'
     },
-    handleDrop: async (e) => {
+    handleDrop: async (e:DragEvent) => {
         const fileList = e.dataTransfer.files;
         const pathes = [];
         for (let i = 0; i < fileList.length; i++) {
@@ -36,7 +36,7 @@ const events = {
         }
         fileDatas.value = await window.api.resolveFiles(pathes);
     },
-    wheel: (e) => {
+    wheel: (e:WheelEvent) => {
         if (e.deltaY > 0) {
             index.value = index.value + 1;
         } else {
@@ -69,9 +69,10 @@ const events = {
 
 
 <style scoped lang="css">
+
 .drop-container {
     width: 100%;
-    height: 100%;
+    height:90vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -82,12 +83,24 @@ const events = {
     color: #333;
 }
 
-.img-container {
-    width: 100%;
-    height: 100%;
+.view-container {
     justify-content: center;
     align-items: center;
     background-color: #f0f0f0;
     border-radius: 10px;
 }   
+
+.control-area {
+    width: 100%;
+}
+
+.del {
+    width: 50px;
+    height: 50px;
+}
+
+img {
+    width: 100%;
+    height: auto;
+}
 </style>
