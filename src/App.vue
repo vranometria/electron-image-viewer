@@ -1,5 +1,5 @@
 <template>
-    <div @dragover.prevent="events.dragover" @drop.prevent="events.handleDrop" @wheel="events.wheel" class="app-container">
+    <div @dragover.prevent="events.dragover" @drop.prevent="events.drop" @wheel="events.wheel" class="app-container">
         <div v-if="fileDatas.length > 0" class="view-container">
             <div class="control-area">
                 {{ index+1 }} / {{ fileDatas.length }}
@@ -19,7 +19,6 @@
 import { ref } from 'vue'
 import { FileData } from './types/file-data'
 
-const files = ref<File[]>([])
 const fileDatas = ref<FileData[]>([])
 const index = ref(0);
 
@@ -27,14 +26,15 @@ const events = {
     dragover: (e:DragEvent) => {
         e.dataTransfer.dropEffect = 'copy'
     },
-    handleDrop: async (e:DragEvent) => {
+    drop: async (e:DragEvent) => {
         const fileList = e.dataTransfer.files;
         const pathes = [];
         for (let i = 0; i < fileList.length; i++) {
-            const p = await window.api.fullpath(fileList[i]);
+            const p = window.api.fullpath(fileList[i]);
             pathes.push(p);
         }
         fileDatas.value = await window.api.resolveFiles(pathes);
+        index.value = 0;
     },
     wheel: (e:WheelEvent) => {
         if (e.deltaY > 0) {
